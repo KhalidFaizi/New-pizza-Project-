@@ -1,0 +1,93 @@
+def print_ingredients(ingredients):
+    print(f"{'':<4}{'Name':<21}{'Measure':<15}{'Max Quantity'}")
+    for i, ingredient in enumerate(ingredients):
+        print(f"{i + 1:<4}{ingredient[0]:<21}{ingredient[1]:<20}{ingredient[2]}")
+
+def get_valid_input(prompt, max_value):
+    while True:
+        try:
+            value = int(input(prompt))
+            if 1 <= value <= max_value:
+                return value
+            else:
+                print("Invalid input. Please try again.")
+        except ValueError:
+            print("Invalid input. Please try again.")
+
+def main():
+    crusts = [("Crust - regular", "each", 1), ("Crust - gluten-free", "each", 1)]
+    sauces = [("Red Sauce", "1/4 cup", 2)]
+    toppings = [
+        ("Pizza cheese", "1/4 cup", 2), ("Diced onion", "1/8 cup", 2),
+        ("Diced green pepper", "1/8 cup", 2), ("Pepperoni", "2 pieces", 4),
+        ("Sliced mushroom", "1/8 cup", 2), ("Diced jalapenos", "1/8 cup", 2),
+        ("Sardines", "each", 4), ("Pineapple Chunks", "2 pieces", 4),
+        ("Tofu", "1/4 cup", 2), ("Ham Chunks", "4 pieces", 4),
+        ("Dry red pepper", "Generous sprinkle", 4), ("Dried basil", "Generous sprinkle", 2),
+        ("Chicken", "2 pieces", 2),
+        # Adding new toppings
+        ("Bacon", "2 pieces", 4), ("Olives", "1/8 cup", 2)
+    ]
+    pizza = []
+
+    print("""
+    ____  _                    _____ __                     
+   / __ \\(_)_______  ____ _   / ___// /_____  ________      
+  / /_/ / /_  /_  / / __ `/   \\__ \\/ __/ __ \\/ ___/ _ \\     
+ / ____/ / / /_/ /_/ /_/ /   ___/ / /_/ /_/ / /  /  __/     
+/_/   /_/ /___/___/\\__,_/   /____/\\__/\\____/_/   \\___/      
+                                                            
+    """)
+    print("Welcome to our pizza store of Group 4\nBuy one get one free. Hurry up limited offer\n")
+
+    print("*********************************************")
+    print("Choose a crust:")
+    print_ingredients(crusts)
+    crust_choice = get_valid_input("Enter the number of your choice: ", len(crusts)) - 1
+    crust_quantity = get_valid_input(f"Enter quantity (max {crusts[crust_choice][2]}): ", crusts[crust_choice][2])
+    pizza.append((crusts[crust_choice][0], crusts[crust_choice][1], crust_quantity))
+    crusts.pop(crust_choice)
+
+    print("*********************************************")
+    print("Choose a sauce:")
+    print_ingredients(sauces)
+    sauce_choice = get_valid_input("Enter the number of your choice: ", len(sauces)) - 1
+    sauce_quantity = get_valid_input(f"Enter quantity (max {sauces[sauce_choice][2]}): ", sauces[sauce_choice][2])
+    pizza.append((sauces[sauce_choice][0], sauces[sauce_choice][1], sauce_quantity))
+    sauces.pop(sauce_choice)
+
+    while len(pizza) < 8:
+        print("*********************************************")
+        print("Choose a topping:")
+        print_ingredients(toppings)
+        topping_choice = get_valid_input("Enter the number of your choice: ", len(toppings)) - 1
+
+        topping_name, topping_measure, topping_max_quantity = toppings[topping_choice]
+        current_quantity = next((qty for name, measure, qty in pizza if name == topping_name), 0)
+
+        if current_quantity == topping_max_quantity:
+            print(f"Cannot add more of this ingredient, you have {current_quantity} and the max is {topping_max_quantity}.")
+        else:
+            additional_quantity = get_valid_input(
+                f"Enter additional quantity (you have {current_quantity} and the max is {topping_max_quantity}): ",
+                topping_max_quantity - current_quantity
+            )
+            if current_quantity > 0:
+                pizza = [(name, measure, qty + additional_quantity) if name == topping_name else (name, measure, qty) for name, measure, qty in pizza]
+            else:
+                pizza.append((topping_name, topping_measure, additional_quantity))
+
+        toppings.pop(topping_choice)
+
+        print("**********************************************")
+        if input("Are you finished? (yes/no): ").lower() == "yes":
+            break
+
+    print("**************************************************")
+    print("Your pizza will be made with the following ingredients:")
+    for name, measure, quantity in pizza:
+        print(f"- {name} with a quantity of {quantity}")
+    print("Nice choice of ingredients! The pizza will be cooked to perfection. Enjoy!")
+
+if __name__ == "__main__":
+    main()
